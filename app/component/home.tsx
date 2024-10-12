@@ -16,3 +16,10 @@ import { useAccount, useReadContract, type BaseError, useWriteContract, useWaitF
 import {  homeABI, homeAddress } from "@/constants"
 import { formatEther } from "viem"
 import { waitForTransactionReceipt } from "viem/actions";
+
+
+const Home = () => {
+
+}
+
+export default Home

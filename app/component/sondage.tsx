@@ -24,40 +24,40 @@ const Sondage = () => {
     const { address } = useAccount();
   
     const { data: question, isLoading: questionLoading } = useReadContract({
-        address: contractAddress,
-        abi: ABI,
+        address: sondageAddress,
+        abi: sondageABI,
         functionName: 'getQuestion',
     })
 
     const { data: isOpen, isLoading: isOpenLoading, refetch: refetchIsOpen } = useReadContract({
-        address: contractAddress,
-        abi: ABI,
+        address: sondageAddress,
+        abi: sondageABI,
         functionName: 'isOpen',
     })
 
     const { data: reponses, isLoading: reponsesLoading } = useReadContract({
-        address: contractAddress,
-        abi: ABI,
+        address: sondageAddress,
+        abi: sondageABI,
         functionName: 'getChoixReponse',
      })
 
     const { data: getMontant, isLoading: getMontantLoading, refetch: refetchgetMontant } = useReadContract({
-    address: contractAddress,
-    abi: ABI,
+    address: sondageAddress,
+    abi: sondageABI,
     functionName: 'getMontant',
     })
 
     const { data: resultats, isLoading: resultatsLoading, refetch: refetchgResultats } = useReadContract({
-        address: contractAddress,
-        abi: ABI,
+        address: sondageAddress,
+        abi: sondageABI,
         functionName: 'getResultat',
         })
 
     const { data: hashVote, error: votingError, isPending: votePending, writeContract, isSuccess: isVoteSuccess } = useWriteContract();
     const submitVote = async(vote:string) => {
         writeContract({
-            address: contractAddress,
-            abi:ABI,
+            address: sondageAddress,
+            abi:sondageABI,
             functionName: 'vote',
             account: address,
             args:([Number(vote)])
@@ -70,8 +70,8 @@ const Sondage = () => {
     const { data: hashGain, error: gainError, isPending: gainPending, isSuccess: isGainSuccess } = useWriteContract();
     const obtenirgain = async() => {
         writeContract({
-            address: contractAddress,
-            abi:ABI,
+            address: sondageAddress,
+            abi:sondageABI,
             functionName: 'gain',
             account: address
         });
