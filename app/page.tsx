@@ -5,7 +5,7 @@ import { Layout } from "./component/layout";
 import { Flex, Alert, AlertIcon, Text } from '@chakra-ui/react';
 
 import NotConnected from "./component/notConnected"; 
-import Sondage from "./component/sondage";
+import HomeSondage from "./component/home";
 
 export default function Home() {
 
@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <Layout>
     { isConnected ? (
-      <Sondage />
+      <HomeSondage />
     ) : (
       <NotConnected />
     )}
