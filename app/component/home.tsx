@@ -14,13 +14,22 @@ import {
 // Wagmi
 import { useAccount, useWatchContractEvent, useReadContract, type BaseError, useWriteContract, useWaitForTransactionReceipt  } from "wagmi"
 import {  homeABI, homeAddress } from "@/constants"
-import { formatEther } from "viem"
+import { Address, formatEther, parseEther  } from "viem"
 import { waitForTransactionReceipt } from "viem/actions";
 import Sondage from "./sondage";
 
 
 const HomeSondage = () => {
 
+    interface SondageData {
+        questionContrat: string
+        addressContrat: Address
+        reponsesContrat: Array<string>
+        nbrReponsePayantes : number
+        montantPartager: BigInt
+    }
+
+    const [sondagesData, setSondagesData] = useState<SondageData[]>([]);
     const [ reponses, setReponses] = useState<string[]>([]);
     const [ question, setQuestion ] = useState<string>("");
     const [ reponsesPayante, setReponsesPayante] = useState();
@@ -55,10 +64,17 @@ const HomeSondage = () => {
         abi: homeABI,
         eventName: 'Sondagecreation',
         onLogs: logs => {
-            console.log(logs[0].args)
-            console.log(newSondages);
+
             if (!newSondages.includes(logs[0].args.sondage)) {
+                console.log(sondagesData);
                 setSondages([...newSondages, logs[0].args.sondage])
+                setSondagesData([...sondagesData, {
+                    questionContrat: question,
+                    addressContrat: logs[0].args.sondage,
+                    reponsesContrat: reponses,
+                    nbrReponsePayantes: Number(reponsesPayante), 
+                    montantPartager : BigInt(1) 
+                }])
                 
             } 
         }
@@ -77,13 +93,12 @@ const HomeSondage = () => {
     return (
         <VStack>
             <HStack>
-                { newSondages.map(e => (
+                { sondagesData.map(e => (
                     <>
-                    <Flex>address : {e}</Flex>
                     <Sondage 
-                        questionContrat={question}
-                        addressContrat= {e}
-                        reponsesContrat={reponses} 
+                        questionContrat={e.questionContrat}
+                        addressContrat= {e.addressContrat}
+                        reponsesContrat={e.reponsesContrat} 
                     />
                     </>
                 ))}
