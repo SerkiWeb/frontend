@@ -18,28 +18,30 @@ import { Address, formatEther } from "viem"
 import { waitForTransactionReceipt } from "viem/actions";
 
 
-const Sondage = ({questionContract, reponsesContrat, addressContrat }) => {
+const Sondage = (props) => {
 
+    const addressContrat = props.addressContrat
     const [vote, setVote ] = useState<string>();
     const { address } = useAccount();
   
-    // const { data: question, isLoading: questionLoading } = useReadContract({
-    //     address: addressContrat,
-    //     abi: sondageABI,
-    //     functionName: 'getQuestion',
-    // })
+    const { data: question, isLoading: questionLoading } = useReadContract({
+        address: addressContrat,
+        abi: sondageABI,
+        functionName: 'getQuestion',
+    })
 
     const { data: isOpen, isLoading: isOpenLoading, refetch: refetchIsOpen } = useReadContract({
         address: addressContrat,
         abi: sondageABI,
         functionName: 'isOpen',
     })
+    
 
-    // const { data: reponses, isLoading: reponsesLoading } = useReadContract({
-    //     address: addressContrat,
-    //     abi: sondageABI,
-    //     functionName: 'getChoixReponse',
-    //  })
+    const { data: reponses, isLoading: reponsesLoading } = useReadContract({
+        address: addressContrat,
+        abi: sondageABI,
+        functionName: 'getChoixReponse',
+     })
 
     const { data: getMontant, isLoading: getMontantLoading, refetch: refetchgetMontant } = useReadContract({
     address: addressContrat,
@@ -118,19 +120,19 @@ const Sondage = ({questionContract, reponsesContrat, addressContrat }) => {
             <Text as="b">resultats : </Text>
                 <StatGroup>
                     <Stat>
-                        <StatLabel>{ formatReponse(reponsesContrat as string[], 0) }</StatLabel>
+                        <StatLabel>{ formatReponse(reponses as string[], 0) }</StatLabel>
                         <StatNumber>{ formatResultat(resultats as bigint[], 0) }</StatNumber>
                     </Stat>
                     <Stat>
-                        <StatLabel>{ formatReponse(reponsesContrat as string[], 1) }</StatLabel>
+                        <StatLabel>{ formatReponse(reponses as string[], 1) }</StatLabel>
                         <StatNumber>{ formatResultat(resultats as bigint[], 1) }</StatNumber>
                     </Stat>
                     <Stat>
-                        <StatLabel>{ formatReponse(reponsesContrat as string[], 2) }</StatLabel>
+                        <StatLabel>{ formatReponse(reponses as string[], 2) }</StatLabel>
                         <StatNumber>{ formatResultat(resultats as bigint[], 2) }</StatNumber>
                     </Stat>
                     <Stat>
-                        <StatLabel>{ formatReponse(reponsesContrat as string[], 3) }</StatLabel>
+                        <StatLabel>{ formatReponse(reponses as string[], 3) }</StatLabel>
                         <StatNumber>{ formatResultat(resultats as bigint[], 3) }</StatNumber>
                     </Stat>
                 </StatGroup>
@@ -146,13 +148,13 @@ const Sondage = ({questionContract, reponsesContrat, addressContrat }) => {
                 </Text>
             </Box>
             <Box>
-            <Text>Question :<Text as="b">{questionContract as string }</Text></Text>
+            <Text>Question :<Text as="b">{question as string }</Text></Text>
                 <RadioGroup onChange={setVote} value={vote}>
                     <Stack direction='row'>
-                        <Radio value='0'>{ formatReponse(reponsesContrat as string[], 0) }</Radio>
-                        <Radio value='1'>{ formatReponse(reponsesContrat as string[], 1) }</Radio>
-                        <Radio value='2'>{ formatReponse(reponsesContrat as string[], 2) }</Radio>
-                        <Radio value='3'>{ formatReponse(reponsesContrat as string[], 3) }</Radio>
+                        <Radio value='0'>{ formatReponse(reponses as string[], 0) }</Radio>
+                        <Radio value='1'>{ formatReponse(reponses as string[], 1) }</Radio>
+                        <Radio value='2'>{ formatReponse(reponses as string[], 2) }</Radio>
+                        <Radio value='3'>{ formatReponse(reponses as string[], 3) }</Radio>
                     </Stack>
                 </RadioGroup>
             </Box>

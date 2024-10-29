@@ -14,9 +14,8 @@ import {
 // Wagmi
 import { useAccount, useWatchContractEvent, useReadContract, type BaseError, useWriteContract, useWaitForTransactionReceipt  } from "wagmi"
 import {  homeABI, homeAddress } from "@/constants"
-import { Address, formatEther, parseEther  } from "viem"
-import { waitForTransactionReceipt } from "viem/actions";
-import Sondage from "./sondage";
+import { Address, Log, parseEther  } from "viem"
+import MiniaturePage from "../miniaturePage";
 
 
 const HomeSondage = () => {
@@ -29,11 +28,16 @@ const HomeSondage = () => {
         montantPartager: BigInt
     }
 
+    interface SondageCreation {
+        amount : BigInt
+        sondage : Address
+    }
+
     const [sondagesData, setSondagesData] = useState<SondageData[]>([]);
     const [ reponses, setReponses] = useState<string[]>([]);
     const [ question, setQuestion ] = useState<string>("");
-    const [ reponsesPayante, setReponsesPayante] = useState();
-    const [ etherValue , setEtherValue ] = useState();
+    const [ reponsesPayante, setReponsesPayante] = useState<number>();
+    const [ etherValue , setEtherValue ] = useState<BigInt>();
     const [ newSondages, setSondages ] = useState<string[]>([])
 
     const { data: sondages, isLoading: isSondagesLoading, refetch: refetchSondages } = useReadContract({
@@ -44,14 +48,15 @@ const HomeSondage = () => {
 
     const { status, data: creationOK, error: creationError, isPending: creationPending, writeContract } = useWriteContract();
     const creerSondage = async() => {
-        console.log("creeation sondage")
-        writeContract({
-            address: homeAddress,
-            abi:homeABI,
-            functionName: 'createSondage',
-            args:([question, reponses, 10]),
-            value: BigInt(1)
-        });
+        if (etherValue != undefined){
+            writeContract({
+                address: homeAddress,
+                abi:homeABI,
+                functionName: 'createSondage',
+                args:([question, reponses, 10]),
+                value: parseEther(etherValue.toString())
+            });
+        }
     };
     
     const {data , isLoading: ConfirmingCreation, isSuccess: creationSuccess, error: transactionError,   } = useWaitForTransactionReceipt({ 
@@ -64,41 +69,42 @@ const HomeSondage = () => {
         abi: homeABI,
         eventName: 'Sondagecreation',
         onLogs: logs => {
-
-            if (!newSondages.includes(logs[0].args.sondage)) {
-                console.log(sondagesData);
-                setSondages([...newSondages, logs[0].args.sondage])
-                setSondagesData([...sondagesData, {
+            const log : SondageCreation = logs[0].args; 
+            if (!newSondages.includes(log.sondage) && etherValue != undefined) {
+                const nvxSondage : SondageData = {
                     questionContrat: question,
-                    addressContrat: logs[0].args.sondage,
+                    addressContrat: log.sondage,
                     reponsesContrat: reponses,
                     nbrReponsePayantes: Number(reponsesPayante), 
-                    montantPartager : BigInt(1) 
-                }])
-                
-            } 
+                    montantPartager : parseEther(etherValue.toString()),
+                };
+                setSondages([...newSondages, log.sondage])
+                setSondagesData([...sondagesData, nvxSondage])
+            }
+               
         }
     });
 
-    const updateReponses = (e, index: number) => {
+    const updateReponses = (e :  React.ChangeEvent<HTMLInputElement>, index: number) => {   
         const updatedQuestions = [...reponses];
         updatedQuestions[index] = e.target.value;
         setReponses(updatedQuestions);
     }
 
-    const formatNewSondages = () => {
-
+    const changeEtherValue = (event :  React.ChangeEvent<HTMLInputElement>) => {
+        const value = BigInt(event.target.value);
+        setEtherValue(value);
     }
-      
+
     return (
         <VStack>
             <HStack>
-                { sondagesData.map(e => (
+                { sondagesData.map(elt => (
                     <>
-                    <Sondage 
-                        questionContrat={e.questionContrat}
-                        addressContrat= {e.addressContrat}
-                        reponsesContrat={e.reponsesContrat} 
+                    <MiniaturePage 
+                        questionContract = {elt.questionContrat} 
+                        addressContrat   = {elt.addressContrat}
+                        reponsesContrat  = {elt.reponsesContrat}
                     />
                     </>
                 ))}
@@ -117,9 +123,9 @@ const HomeSondage = () => {
                 <Input type='text' onChange={(e) => updateReponses(e,2)} />
                 <Input type='text' onChange={(e) => updateReponses(e,3)} />
                 <FormLabel>nombre de reponses payantes</FormLabel>
-                <Input type='number' value={reponsesPayante}  />
+                <Input type='number' value={reponsesPayante} onChange={(e) => setReponsesPayante(Number(e.target.value))} />
                 <FormLabel>ether</FormLabel>
-                <Input type='number' value={etherValue} />
+                <Input required type='number' onChange={changeEtherValue} value={etherValue as number | undefined}/>
                 <Button onClick={()=> creerSondage() }>crée sondage</Button>
             </FormControl>
             </Flex>

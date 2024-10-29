@@ -20,6 +20,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.3.0",
+    "react-router-dom": "^6.27.0",
     "viem": "^2.21.17",
     "wagmi": "^2.12.16"
   },

@@ -13,8 +13,10 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import '@rainbow-me/rainbowkit/styles.css';
-
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react'
+import HomeSondage from './component/home/page';
+import Sondage from './component/sondage/[address]/page';
 
 const queryClient = new QueryClient();
 
@@ -33,15 +35,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-      <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-        <ChakraProvider>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              <ChakraProvider>!
                 {children}
               </ChakraProvider>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-      </WagmiProvider>  
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>  
       </body>
     </html>
   );

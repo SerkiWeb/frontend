@@ -5,7 +5,7 @@ import { Layout } from "./component/layout";
 import { Flex, Alert, AlertIcon, Text } from '@chakra-ui/react';
 
 import NotConnected from "./component/notConnected"; 
-import HomeSondage from "./component/home";
+import HomeSondage from "./component/home/page";
 
 export default function Home() {
 
